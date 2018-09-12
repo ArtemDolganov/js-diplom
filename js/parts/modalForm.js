@@ -2,7 +2,7 @@ function modalForm() {
 //Modal&form
 //Вызов модалок а также отвравка формы
 let popupCallWindow = document.getElementsByClassName('popup')[0],
-popupDialog = popupCallWindow.getElementsByClassName('popup_dialog')[0],
+//popupDialog = popupCallWindow.getElementsByClassName('popup_dialog')[0],
 contactUs = document.getElementsByClassName('contact_us')[0],
 feedback = document.getElementsByClassName('feedback_block')[0],
 callMaster = document.getElementsByClassName('header_btn')[0],
