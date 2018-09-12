@@ -17,21 +17,23 @@
 })()({ 1: [function (require, module, exports) {
         window.addEventListener('DOMContentLoaded', function () {
 
-            var modalForm = require('../parts/modalForm.js');
+            var modal = require('../parts/modal.js');
+            var form = require('../parts/form.js');
             var tabFirst = require('../parts/tabFirst.js');
             var tabSeconds = require('../parts/tabSeconds.js');
             var calc = require('../parts/calc.js');
             var timer = require('../parts/timer.js');
             var bigImages = require('../parts/bigImages.js');
 
-            modalForm();
+            modal();
+            form();
             tabFirst();
             tabSeconds();
             calc();
             timer();
             bigImages();
         });
-    }, { "../parts/bigImages.js": 2, "../parts/calc.js": 3, "../parts/modalForm.js": 4, "../parts/tabFirst.js": 5, "../parts/tabSeconds.js": 6, "../parts/timer.js": 7 }], 2: [function (require, module, exports) {
+    }, { "../parts/bigImages.js": 2, "../parts/calc.js": 3, "../parts/form.js": 4, "../parts/modal.js": 5, "../parts/tabFirst.js": 6, "../parts/tabSeconds.js": 7, "../parts/timer.js": 8 }], 2: [function (require, module, exports) {
         function bigImages() {
             var imagesGallery = document.getElementsByClassName('col-lg-3 col-md-4 col-sm-6 col-xs-12 text-center wow fadeIn'),
                 imagesBig = document.getElementsByClassName('big_images'),
@@ -441,165 +443,141 @@
 
         module.exports = calc;
     }, {}], 4: [function (require, module, exports) {
-        function modalForm() {
-            //Modal&form
-            //Вызов модалок а также отвравка формы
-            var popupCallWindow = document.getElementsByClassName('popup')[0],
-                popupDialog = popupCallWindow.getElementsByClassName('popup_dialog')[0],
-                contactUs = document.getElementsByClassName('contact_us')[0],
-                feedback = document.getElementsByClassName('feedback_block')[0],
-                callMaster = document.getElementsByClassName('header_btn')[0],
-                mainForm = document.getElementsByClassName('col-lg-4 col-sm-8 col-sm-offset-2'),
-                message = new Object();
-            event.preventDefault();
+        function form() {
+            var message = new Object();
+            message.loading = "Загрузка...";
+            message.success = "Спасибо! Скоро мы с Вами свяжемся";
+            message.failure = "Что-то пошло не так...";
 
-            popupCallWindow.style.top = 'auto';
-            popupCallWindow.style.left = 'auto';
-            message.loading = 'Идет отправка';
-            message.success = 'Спасибо, письмо отправлено';
-            message.failure = 'К сожелению что-то пошло не так';
+            var form = document.getElementsByTagName('form'),
+                statusMessage = document.createElement('div');
 
-            function sendForm(element) {
-                var input = element.getElementsByTagName('input'),
-                    inputName = input[0],
-                    inputPhone = input[1],
-                    popupForm = element.getElementsByClassName('form')[0],
-                    statusMessage = document.createElement('div'),
-                    elementBtn = element.getElementsByClassName('btn-block')[0];
-
-                function clearInput() {
-                    for (var i = 0; i < input.length; i++) {
-                        input[i].value = '';
-                    }
+            function setCursorPosition(pos, elem) {
+                elem.focus();
+                if (elem.setSelectionRange) elem.setSelectionRange(pos, pos);else if (elem.createTextRange) {
+                    var range = elem.createTextRange();
+                    range.collapse(true);
+                    range.moveEnd("character", pos);
+                    range.moveStart("character", pos);
+                    range.select();
                 }
-
-                clearInput();
-
-                elementBtn.disabled = true;
-
-                statusMessage.classList.add('status');
-
-                popupForm.appendChild(statusMessage);
-
-                element.style.display = 'block';
-
-                inputPhone.addEventListener('change', function () {
-
-                    if (isNaN(inputPhone.value) || inputPhone.value == '') {
-
-                        statusMessage.innerHTML = "Введите пожалуйста ваш номер телефона, а не набор букв";
-
-                        elementBtn.disabled = true;
-                    } else {
-                        statusMessage.innerHTML = "Спасибо, теперь все правильно, проверьте ваши данные и если все правильно то смело нажимайте кнопку заказать звонок";
-                        elementBtn.disabled = false;
-                        message.txt = encodeURIComponent("Вам пришло сообщение от " + inputName.value + " что бы ему позвонить наберите " + inputPhone.value);
-                    }
-                });
-
-                element.addEventListener('submit', function (elem) {
-
-                    elem.preventDefault();
-
-                    function postData(data) {
-
-                        return new Promise(function (resolve, reject) {
-                            var request = new XMLHttpRequest();
-
-                            request.open('POST', 'server.php');
-
-                            request.setRequestHeader('Content-Type', 'aplication/x-www-form-urlencoded');
-
-                            request.onreadystatechange = function () {
-
-                                if (request.readyState < 4) {
-                                    resolve();
-                                } else if (request.readyState === 4) {
-                                    if (request.status === 200 && request.status < 300) {
-                                        resolve();
-                                    } else {
-                                        reject();
-                                    }
-                                }
-                            };
-
-                            request.send(data);
-                        });
-                    }
-                    // postData
-
-                    postData(message.txt).then(function () {
-                        return statusMessage.innerHTML = message.loading;
-                    }).then(function () {
-                        statusMessage.innerHTML = message.success;
-                        setTimeout(function () {
-                            statusMessage.innerHTML = '';
-                        }, 3000);
-                    }).catch(function () {
-                        return statusMessage.innerHTML = message.failure;
-                    }).then(clearInput);
-                });
             }
 
-            contactUs.addEventListener('click', function () {
+            function mask(event) {
+                var matrix = "_ (___) ___ ____",
+                    i = 0,
+                    def = matrix.replace(/\D/g, ""),
+                    val = this.value.replace(/\D/g, "");
+                if (def.length >= val.length) val = def;
+                this.value = matrix.replace(/./g, function (a) {
+                    return (/[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a
+                    );
+                });
+                if (event.type == "blur") {
+                    if (this.value.length == 2) this.value = "";
+                } else setCursorPosition(this.value.length, this);
+            };
 
-                sendForm(popupCallWindow);
-            });
+            var _loop = function _loop(i) {
+                var input = form[i].getElementsByTagName('input'),
+                    input_tel = document.getElementsByName("user_phone");
 
-            feedback.addEventListener('click', function () {
-                event.preventDefault();
-                sendForm(popupCallWindow);
-            });
+                input_tel[i].addEventListener("input", mask);
+                input_tel[i].addEventListener("focus", mask);
+                input_tel[i].addEventListener("blur", mask);
+                form[i].addEventListener('submit', function (event) {
+                    form[i].appendChild(statusMessage);
+                    event.preventDefault();
 
-            //Нажатие на Крестик
-            var popupCloseBotton = popupCallWindow.getElementsByClassName('popup_close')[0];
+                    //AJAX
+                    var request = new XMLHttpRequest();
+                    request.open("POST", 'server.php');
 
-            popupCloseBotton.addEventListener('click', function () {
+                    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-                popupCallWindow.style.display = 'none';
-            });
+                    var formData = new FormData(form[i]);
 
-            //Подложка
+                    request.send(formData);
 
-            popupCallWindow.addEventListener('click', function (e) {
-                var target = e.target;
-                if (target.closest('.form') && !target.closest('.popup_close')) {
-                    target.preventDefault();
-                } else if (target.closest('.popup')) popupCallWindow.style.display = 'none';
-            });
-            //Кнопка вызвать мастера  сверху
-            callMaster.addEventListener('click', function () {
+                    request.onreadystatechange = function () {
+                        if (request.readyState < 4) {
+                            statusMessage.innerHTML = message.loading;
+                        } else if (request.readyState === 4) {
+                            if (request.status == 200 && request.status < 300) {
+                                console.log(form[i]);
+                                statusMessage.innerHTML = message.success;
+                            } else {
+                                statusMessage.innerHTML = message.failure;
+                            }
+                        }
+                    };
+                    for (var _i9 = 0; _i9 < input.length; _i9++) {
+                        input[_i9].value = '';
+                    }
+                });
+            };
 
-                sendForm(popupCallWindow);
-                event.preventDefault();
-            });
+            for (var i = 0; i < form.length; i++) {
+                _loop(i);
+            };
+        }
 
-            //60 секундный выход модалки
+        module.exports = form;
+    }, {}], 5: [function (require, module, exports) {
+        function modal() {
+            var popupBtn = document.querySelector('.popup_engineer_btn'),
+                popupEngineer = document.querySelector('.popup_engineer'),
+                closeEngineer = popupEngineer.getElementsByTagName('strong')[0],
+                popup = document.querySelector('.popup');
+
             setTimeout(function () {
-
-                sendForm(popupCallWindow);
+                popup.style.display = 'flex';
             }, 60000);
 
-            //Задание отправки формы для всех бланков
-            for (var i = 0; i < mainForm.length; i++) {
+            popupBtn.addEventListener('click', function () {
+                popupEngineer.style.display = 'flex';
+                popupEngineer.classList.add('open');
+            });
 
-                sendForm(mainForm[i]);
-            }
-
-            //проверка на родителя
-            function isDescendant(parent, child) {
-                var node = child.parentNode;
-                while (node != null) {
-                    if (node == parent) {
-                        return true;
-                    }
-                    node = node.parentNode;
+            document.body.addEventListener('click', function (event) {
+                var target = event.target;
+                if (target.matches('.popup_engineer')) {
+                    popupEngineer.style.display = 'none';
                 }
-                return false;
-            }
+            });
+
+            closeEngineer.addEventListener('click', function () {
+                popupEngineer.style.display = 'none';
+            });
+
+            //call-back
+
+            var callOrder = document.getElementsByClassName('phone_link'),
+                callPopup = document.querySelector('.popup'),
+                closeCall = callPopup.getElementsByTagName('strong')[0];
+
+            callOrder[0].addEventListener('click', function () {
+                callPopup.style.display = 'flex';
+            });
+
+            callOrder[1].addEventListener('click', function () {
+                callPopup.style.display = 'flex';
+            });
+
+            document.body.addEventListener('click', function (event) {
+                var target = event.target;
+                if (target.matches('.popup')) {
+                    callPopup.style.display = 'none';
+                }
+            });
+
+            closeCall.addEventListener('click', function () {
+                callPopup.style.display = 'none';
+            });
         }
-        module.exports = modalForm;
-    }, {}], 5: [function (require, module, exports) {
+
+        module.exports = modal;
+    }, {}], 6: [function (require, module, exports) {
         function tabFirst() {
             //TabFirst
 
@@ -639,7 +617,7 @@
             });
         }
         module.exports = tabFirst;
-    }, {}], 6: [function (require, module, exports) {
+    }, {}], 7: [function (require, module, exports) {
         function tabSeconds() {
             var tabSecond = document.querySelectorAll('.decoration_sliders__items'),
                 wrapTabSecond = document.querySelector('.decoration_slider'),
@@ -678,7 +656,7 @@
             });
         }
         module.exports = tabSeconds;
-    }, {}], 7: [function (require, module, exports) {
+    }, {}], 8: [function (require, module, exports) {
         function timer() {
             var deadline = '2019/07/04';
 
