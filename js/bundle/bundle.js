@@ -2,7 +2,8 @@
 window.addEventListener('DOMContentLoaded', function() {
   
    
-    let modalForm = require('../parts/modalForm.js');
+    let modal = require('../parts/modal.js');
+    let form = require('../parts/form.js');
     let tabFirst = require('../parts/tabFirst.js');
     let tabSeconds = require('../parts/tabSeconds.js');
     let calc = require('../parts/calc.js');
@@ -10,7 +11,8 @@ window.addEventListener('DOMContentLoaded', function() {
     let bigImages = require('../parts/bigImages.js');
     
     
-    modalForm();
+    modal();
+    form();
     tabFirst();
     tabSeconds();
     calc();
@@ -20,7 +22,7 @@ window.addEventListener('DOMContentLoaded', function() {
 }); 
 
 
-},{"../parts/bigImages.js":2,"../parts/calc.js":3,"../parts/modalForm.js":4,"../parts/tabFirst.js":5,"../parts/tabSeconds.js":6,"../parts/timer.js":7}],2:[function(require,module,exports){
+},{"../parts/bigImages.js":2,"../parts/calc.js":3,"../parts/form.js":4,"../parts/modal.js":5,"../parts/tabFirst.js":6,"../parts/tabSeconds.js":7,"../parts/timer.js":8}],2:[function(require,module,exports){
 function bigImages() {
 	let imagesGallery = document.getElementsByClassName('col-lg-3 col-md-4 col-sm-6 col-xs-12 text-center wow fadeIn'),
 	imagesBig = document.getElementsByClassName('big_images'),
@@ -448,176 +450,141 @@ checkbox.value = null;
 
 module.exports = calc;
 },{}],4:[function(require,module,exports){
-function modalForm() {
-//Modal&form
-//Вызов модалок а также отвравка формы
-let popupCallWindow = document.getElementsByClassName('popup')[0],
-popupDialog = popupCallWindow.getElementsByClassName('popup_dialog')[0],
-contactUs = document.getElementsByClassName('contact_us')[0],
-feedback = document.getElementsByClassName('feedback_block')[0],
-callMaster = document.getElementsByClassName('header_btn')[0],
-mainForm = document.getElementsByClassName('col-lg-4 col-sm-8 col-sm-offset-2'),
-message = new Object();
-event.preventDefault()
+function form () {
+	let message = new Object();
+	message.loading = "Загрузка...";
+	message.success = "Спасибо! Скоро мы с Вами свяжемся";
+	message.failure = "Что-то пошло не так...";
 
-popupCallWindow.style.top = 'auto';
-popupCallWindow.style.left = 'auto';
-message.loading = 'Идет отправка';
-message.success = 'Спасибо, письмо отправлено';
-message.failure = 'К сожелению что-то пошло не так';
+	let form = document.getElementsByTagName('form'),
+		statusMessage = document.createElement('div');
 
-function sendForm(element) {
-let input = element.getElementsByTagName('input'),
-inputName = input[0],
-inputPhone = input[1],
-popupForm = element.getElementsByClassName('form')[0],
-statusMessage = document.createElement('div'),
-elementBtn = element.getElementsByClassName('btn-block')[0];
+	function setCursorPosition(pos, elem) {
+	    elem.focus();
+	    if (elem.setSelectionRange) elem.setSelectionRange(pos, pos);
+	    else if (elem.createTextRange) {
+	        var range = elem.createTextRange();
+	        range.collapse(true);
+	        range.moveEnd("character", pos);
+	        range.moveStart("character", pos);
+	        range.select()
+	    }
+	}
 
-function clearInput(){
-for (let i = 0; i < input.length; i++) {
-input[i].value = '';
-}
-}
+	function mask(event) {
+	    var matrix = "_ (___) ___ ____",
+	        i = 0,
+	        def = matrix.replace(/\D/g, ""),
+	        val = this.value.replace(/\D/g, "");
+	    if (def.length >= val.length) val = def;
+	    this.value = matrix.replace(/./g, function(a) {
+	        return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a
+	    });
+	    if (event.type == "blur") {
+	        if (this.value.length == 2) this.value = ""
+	    } else setCursorPosition(this.value.length, this)
+	};
+	    
+	for (let i = 0; i < form.length; i++) {
+		let input = form[i].getElementsByTagName('input'),
+			input_tel = document.getElementsByName("user_phone");
 
-clearInput();
+		input_tel[i].addEventListener("input", mask);
+	    input_tel[i].addEventListener("focus", mask);
+	    input_tel[i].addEventListener("blur", mask);
+		form[i].addEventListener('submit', (event) => {
+			form[i].appendChild(statusMessage);
+			event.preventDefault();
 
-elementBtn.disabled = true;
+			//AJAX
+			let request = new XMLHttpRequest();
+			request.open("POST", 'server.php');
 
-statusMessage.classList.add('status');
+			request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-popupForm.appendChild(statusMessage);
-
-element.style.display = 'block';
-
-inputPhone.addEventListener('change', function(){
-
-if(isNaN(inputPhone.value) || inputPhone.value == '') {
-
-    statusMessage.innerHTML = "Введите пожалуйста ваш номер телефона, а не набор букв";
-
-    elementBtn.disabled = true;
-
-    } else {
-        statusMessage.innerHTML = "Спасибо, теперь все правильно, проверьте ваши данные и если все правильно то смело нажимайте кнопку заказать звонок";
-        elementBtn.disabled = false;
-        message.txt = encodeURIComponent("Вам пришло сообщение от " + inputName.value + " что бы ему позвонить наберите " + inputPhone.value);
-
-    }
-});
-
-element.addEventListener('submit', function(elem) {
-
-elem.preventDefault();
-
-
-function postData(data) {
-
-    return new Promise(function(resolve, reject) {
-        let request = new XMLHttpRequest();
-
-        request.open('POST', 'server.php');
-
-        request.setRequestHeader('Content-Type', 'aplication/x-www-form-urlencoded');
-
-        request.onreadystatechange = function() {
-
-            if (request.readyState < 4) {
-                resolve();
-            } else if (request.readyState === 4) {
-                if (request.status === 200 && request.status < 300) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            }
-        };
-
-        request.send(data);
-
-    });
-} 
-// postData
-
-postData(message.txt)
-    .then( () => statusMessage.innerHTML = message.loading)
-    .then( () => {
-        statusMessage.innerHTML = message.success;
-        setTimeout( () => {
-            statusMessage.innerHTML = '';
-        }, 3000);
-        })
-    .catch( () => statusMessage.innerHTML = message.failure)
-    .then(clearInput);
-
-});
-
+			let formData = new FormData(form[i]);
+	
+			request.send(formData);
+			
+			request.onreadystatechange = function() {
+				if (request.readyState < 4) {
+					statusMessage.innerHTML = message.loading;
+				} else if (request.readyState === 4) {
+					if (request.status == 200 && request.status < 300) {
+						console.log(form[i])
+						statusMessage.innerHTML = message.success;
+					}
+					else {
+						statusMessage.innerHTML = message.failure;
+					}
+				}
+			};
+			for (let i = 0; i < input.length; i++) {
+				input[i].value = '';
+			}
+			
+		});
+	};
 }
 
-contactUs.addEventListener('click', function(){
-
-sendForm(popupCallWindow);
-});
-
-feedback.addEventListener('click', function(){
-event.preventDefault();
-sendForm(popupCallWindow);
-
-});
-
-//Нажатие на Крестик
-let popupCloseBotton = popupCallWindow.getElementsByClassName('popup_close')[0];
-
-popupCloseBotton.addEventListener('click', function() {
-
-popupCallWindow.style.display = 'none';
-});
-
-//Подложка
-
-popupCallWindow.addEventListener('click', (e) => {
-let target = e.target;
-if(target.closest('.form') && !target.closest('.popup_close')) {
-    target.preventDefault();
-} else if (target.closest('.popup'))
-popupCallWindow.style.display = 'none';
-});
-//Кнопка вызвать мастера  сверху
-callMaster.addEventListener('click', function(){
-
-sendForm(popupCallWindow);
-event.preventDefault();
-
-});
-
-//60 секундный выход модалки
-setTimeout(function() {
-
-sendForm(popupCallWindow);
-}, 60000);
-
-//Задание отправки формы для всех бланков
-for (let i = 0; i < mainForm.length; i++) {
-
-sendForm(mainForm[i]);
-
-}
-
-//проверка на родителя
-function isDescendant(parent, child) {
-var node = child.parentNode;
-while (node != null) {
- if (node == parent) {
-     return true;
- }
- node = node.parentNode;
-}
-return false;
-}   
-       
-}
-module.exports = modalForm;
+module.exports = form;
 },{}],5:[function(require,module,exports){
+function modal() {
+	let popupBtn = document.querySelector('.popup_engineer_btn'),
+	    popupEngineer = document.querySelector('.popup_engineer'),
+	    closeEngineer = popupEngineer.getElementsByTagName('strong')[0],
+	    popup = document.querySelector('.popup');
+
+
+	setTimeout(function () {
+        popup.style.display = 'flex';
+        
+    }, 60000);
+
+	popupBtn.addEventListener('click', function () {
+		popupEngineer.style.display = 'flex';
+		popupEngineer.classList.add('open');
+	});
+
+	document.body.addEventListener('click', function (event) {
+		var target = event.target;
+		if (target.matches('.popup_engineer')) {
+			popupEngineer.style.display = 'none';
+		}
+	});
+
+	closeEngineer.addEventListener('click', function () {
+		popupEngineer.style.display = 'none';
+	});
+
+	//call-back
+
+	let callOrder = document.getElementsByClassName('phone_link'),
+	    callPopup = document.querySelector('.popup'),
+	    closeCall = callPopup.getElementsByTagName('strong')[0];
+
+	callOrder[0].addEventListener('click', function () {
+		callPopup.style.display = 'flex';
+	});
+
+	callOrder[1].addEventListener('click', function () {
+		callPopup.style.display = 'flex';
+	});
+
+	document.body.addEventListener('click', function (event) {
+		let target = event.target;
+		if (target.matches('.popup')) {
+			callPopup.style.display = 'none';
+		}
+	});
+
+	closeCall.addEventListener('click', function () {
+		callPopup.style.display = 'none';
+	});
+}
+
+module.exports = modal;
+},{}],6:[function(require,module,exports){
 function tabFirst() {
  //TabFirst
         
@@ -659,7 +626,7 @@ function tabFirst() {
  });
 }
 module.exports = tabFirst;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function tabSeconds() {
     let tabSecond = document.querySelectorAll('.decoration_sliders__items'),
         wrapTabSecond = document.querySelector('.decoration_slider'),
@@ -698,7 +665,7 @@ function tabSeconds() {
         });
 }
 module.exports = tabSeconds;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function timer() {
     let deadline = '2019/07/04';
 

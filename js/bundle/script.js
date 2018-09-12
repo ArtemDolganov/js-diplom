@@ -1,7 +1,8 @@
 window.addEventListener('DOMContentLoaded', function() {
   
    
-    let modalForm = require('../parts/modalForm.js');
+    let modal = require('../parts/modal.js');
+    let form = require('../parts/form.js');
     let tabFirst = require('../parts/tabFirst.js');
     let tabSeconds = require('../parts/tabSeconds.js');
     let calc = require('../parts/calc.js');
@@ -9,7 +10,8 @@ window.addEventListener('DOMContentLoaded', function() {
     let bigImages = require('../parts/bigImages.js');
     
     
-    modalForm();
+    modal();
+    form();
     tabFirst();
     tabSeconds();
     calc();
