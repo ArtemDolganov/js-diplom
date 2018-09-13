@@ -59,7 +59,7 @@ function form () {
 					statusMessage.innerHTML = message.loading;
 				} else if (request.readyState === 4) {
 					if (request.status == 200 && request.status < 300) {
-						console.log(form[i])
+						
 						statusMessage.innerHTML = message.success;
 					}
 					else {
