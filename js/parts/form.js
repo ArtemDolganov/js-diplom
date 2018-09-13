@@ -20,7 +20,7 @@ function form () {
 	}
 
 	function mask(event) {
-	    var matrix = "_ (___) ___ ____",
+	    let matrix = "_ (___) ___ ____",
 	        i = 0,
 	        def = matrix.replace(/\D/g, ""),
 	        val = this.value.replace(/\D/g, "");

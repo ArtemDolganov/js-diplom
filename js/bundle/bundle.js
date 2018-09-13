@@ -78,7 +78,7 @@ for (let j = 0; j < imagesGallery.length; j++) {
 }
 //проверка на родителя
 function isDescendant(parent, child) {
-	 var node = child.parentNode;
+	 let node = child.parentNode;
 	 while (node != null) {
 		 if (node == parent) {
 			 return true;
@@ -112,7 +112,7 @@ function form () {
 	}
 
 	function mask(event) {
-	    var matrix = "_ (___) ___ ____",
+	    let matrix = "_ (___) ___ ____",
 	        i = 0,
 	        def = matrix.replace(/\D/g, ""),
 	        val = this.value.replace(/\D/g, "");
@@ -187,7 +187,7 @@ function modal() {
 	});
 
 	document.body.addEventListener('click', function (event) {
-		var target = event.target;
+		let target = event.target;
 		if (target.matches('.popup_engineer')) {
 			popupEngineer.style.display = 'none';
 		}

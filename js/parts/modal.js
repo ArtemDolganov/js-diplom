@@ -16,7 +16,7 @@ function modal() {
 	});
 
 	document.body.addEventListener('click', function (event) {
-		var target = event.target;
+		let target = event.target;
 		if (target.matches('.popup_engineer')) {
 			popupEngineer.style.display = 'none';
 		}

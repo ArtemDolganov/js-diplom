@@ -55,7 +55,7 @@ for (let j = 0; j < imagesGallery.length; j++) {
 }
 //проверка на родителя
 function isDescendant(parent, child) {
-	 var node = child.parentNode;
+	 let node = child.parentNode;
 	 while (node != null) {
 		 if (node == parent) {
 			 return true;
