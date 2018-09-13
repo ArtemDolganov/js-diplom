@@ -306,11 +306,11 @@ function tabFirst() {
 			calcBtn = document.querySelector('.popup_calc_button'),
 			calcNextModal = document.querySelector('.popup_calc_profile'),
 			calcInputs = calcNextModal.getElementsByTagName("input"),
-			closeNextModal = calcNextModal.getElementsByTagName('strong')[0],
+			closeNextModal = document.querySelector('.popup_calc_close'),
 			calcEndBtn = document.querySelector('.popup_calc_profile_button'),
 			calcEndPopup = document.querySelector('.popup_calc_end'),
-			closeEndPopup = calcEndPopup.getElementsByTagName('strong')[0];
-			
+			closeEndPopup = document.querySelector('.popup_calc_end_close');
+			console.log(closeNextModal);			
 
 
 		function hideCalcContent (c) {
