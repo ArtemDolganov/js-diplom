@@ -180,55 +180,27 @@
 		module.exports = form;
 	}, {}], 4: [function (require, module, exports) {
 		function modal() {
-			var popupBtn = document.querySelector('.popup_engineer_btn'),
-			    popupEngineer = document.querySelector('.popup_engineer'),
-			    closeEngineer = popupEngineer.getElementsByTagName('strong')[0],
+			var body = document.querySelector('body'),
 			    popup = document.querySelector('.popup');
+			timePopup();
 
-			setTimeout(function () {
-				popup.style.display = 'flex';
-			}, 60000);
+			body.addEventListener('click', function (e) {
+				clearTimeout(timePopup);
+				e.preventDefault();
+				var target = e.target;
 
-			popupBtn.addEventListener('click', function () {
-				popupEngineer.style.display = 'flex';
-				popupEngineer.classList.add('open');
-			});
-
-			document.body.addEventListener('click', function (event) {
-				var target = event.target;
-				if (target.matches('.popup_engineer')) {
-					popupEngineer.style.display = 'none';
+				if (target.classList.contains('header_btn') || target.classList.contains('phone_link')) {
+					popup.style.display = "block";
+				}
+				if (target.classList.contains('popup_close') || target.parentElement.classList.contains('popup_close') || target.classList.contains('popup') && !target.classList.contains('popup_form')) {
+					popup.style.display = "none";
 				}
 			});
-
-			closeEngineer.addEventListener('click', function () {
-				popupEngineer.style.display = 'none';
-			});
-
-			//call-back
-
-			var callOrder = document.getElementsByClassName('phone_link'),
-			    callPopup = document.querySelector('.popup'),
-			    closeCall = callPopup.getElementsByTagName('strong')[0];
-
-			callOrder[0].addEventListener('click', function () {
-				callPopup.style.display = 'flex';
-			});
-
-			callOrder[1].addEventListener('click', function () {
-				callPopup.style.display = 'flex';
-			});
-
-			document.body.addEventListener('click', function (event) {
-				var target = event.target;
-				if (target.matches('.popup')) {
-					callPopup.style.display = 'none';
-				}
-			});
-
-			closeCall.addEventListener('click', function () {
-				callPopup.style.display = 'none';
-			});
+			function timePopup() {
+				setTimeout(function () {
+					popup.style.display = "block";
+				}, 60000);
+			}
 		}
 
 		module.exports = modal;
@@ -300,7 +272,7 @@
 
 			document.body.addEventListener('click', function (event) {
 				var target = event.target;
-				if (target.matches('.popup_calc')) {
+				if (target.classList.contains('popup_calc')) {
 					tabCalc.style.display = 'none';
 					document.body.style.overflow = '';
 				}

@@ -62,7 +62,7 @@ function tabFirst() {
 
 		document.body.addEventListener('click', function (event) {
         let target = event.target;
-            if(target.matches('.popup_calc')) {
+            if (target.classList.contains('popup_calc')) {
  				tabCalc.style.display = 'none';
  				document.body.style.overflow = '';
             }
