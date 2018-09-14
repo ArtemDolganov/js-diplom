@@ -1,7 +1,7 @@
 function modal() {
 	let popupBtn = document.querySelector('.popup_engineer_btn'),
 	    popupEngineer = document.querySelector('.popup_engineer'),
-	    closeEngineer = popupEngineer.getElementsByTagName('strong')[0],
+	    closeEngineer = popupEngineer.getElementsByClassName('popup_close')[0],
 	    popup = document.querySelector('.popup');
 
 
@@ -30,7 +30,7 @@ function modal() {
 
 	let callOrder = document.getElementsByClassName('phone_link'),
 	    callPopup = document.querySelector('.popup'),
-	    closeCall = callPopup.getElementsByTagName('strong')[0];
+	    closeCall = callPopup.getElementsByClassName('popup_close')[0];
 
 	callOrder[0].addEventListener('click', function () {
 		callPopup.style.display = 'flex';
